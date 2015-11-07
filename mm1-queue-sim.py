@@ -76,8 +76,8 @@ class server_queue:
 
 	def probability(self): 
 		self.loss_probability = float(self.packets_dropped) / float(self.num_pkt_total)
-		#print('self.packets_dropped: %d' % self.packets_dropped)
-		#print('self.num_pkt_total: %d' % self.num_pkt_total)
+		print('\nNumber of Packets Dropped: %d' % self.packets_dropped)
+		print('Total Number of Packets: %d' % self.num_pkt_total)
 		#print('loss probability: %f' % self.loss_probability)
 		return self.loss_probability
 
@@ -151,6 +151,6 @@ def main():
 			round(Packet_Delay.median(), 8),
 			round(Packet_Delay.standarddeviation(), 8),
 			round(1-Server_Idle_Periods.sum()/SIM_TIME, 8)))
-		print('Loss Packet Probability: %f' % router.probability())
+		print('Loss Packet Probability: %f\n' % router.probability())
 	
 if __name__ == '__main__': main()
