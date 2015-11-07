@@ -27,7 +27,7 @@ class server_queue:
 		#self.Buffer = Buffer  
 		self.packets_dropped = 0 
 		self.num_pkt_total = 0 #number of packets in total 
-
+		self.loss_probability = 0 
 
 		
 	def process_packet(self, env, packet):
@@ -70,14 +70,16 @@ class server_queue:
 				#print('Buffer size: %d' % self.queue_len)
 			else: 
 				env.process(self.process_packet(env, new_packet))
-				print('inside else statement')
+				#print('inside else statement')
 		
 
 
 	def probability(self): 
-		loss_probability = (self.packets_dropped / self.num_pkt_total)
-		#print('loss probability: %d % loss_probability')
-		return loss_probability
+		self.loss_probability = float(self.packets_dropped) / float(self.num_pkt_total)
+		#print('self.packets_dropped: %d' % self.packets_dropped)
+		#print('self.num_pkt_total: %d' % self.num_pkt_total)
+		#print('loss probability: %f' % self.loss_probability)
+		return self.loss_probability
 
 
 """ Packet class """			
@@ -130,8 +132,8 @@ class StatObject:
 def main():
 	Buffer = int(sys.argv[1]); 
 	print("Simple queue system model:mu = {0}".format(MU))
-	print ("{0:<9} {1:<9} {2:<9} {3:<9} {4:<9} {5:<9} {6:<9} {7:<9} {8:<9}".format(
-        "Lambda", "Count", "Min", "Max", "Mean", "Median", "Sd", "Utilization", "Packet Loss Probability"))
+	print ("{0:<9} {1:<9} {2:<9} {3:<9} {4:<9} {5:<9} {6:<9} {7:<9}".format(
+        "Lambda", "Count", "Min", "Max", "Mean", "Median", "Sd", "Utilization"))
 	random.seed(RANDOM_SEED)
 	for arrival_rate in [0.2, 0.4, 0.6, 0.8, 0.9, 0.99]:
 		env = simpy.Environment()
@@ -140,15 +142,15 @@ def main():
 		router = server_queue(env, arrival_rate, Packet_Delay, Server_Idle_Periods, Buffer)
 		env.process(router.packets_arrival(env))
 		env.run(until=SIM_TIME)
-		print ("{0:<9.3f} {1:<9} {2:<9.3f} {3:<9.3f} {4:<9.3f} {5:<9.3f} {6:<9.3f} {7:<9.3f} {8:<9.3f}".format(
-			round(arrival_rate, 3),
+		print ("{0:<9.3f} {1:<9} {2:<9.3f} {3:<9.3f} {4:<9.3f} {5:<9.3f} {6:<9.3f} {7:<9.3f}".format(
+			round(arrival_rate, 8),
 			int(Packet_Delay.count()),
-			round(Packet_Delay.minimum(), 3),
-			round(Packet_Delay.maximum(), 3),
-			round(Packet_Delay.mean(), 3),
-			round(Packet_Delay.median(), 3),
-			round(Packet_Delay.standarddeviation(), 3),
-			round(1-Server_Idle_Periods.sum()/SIM_TIME, 3),
-			round(router.probability(), 3)))
+			round(Packet_Delay.minimum(), 8),
+			round(Packet_Delay.maximum(), 8),
+			round(Packet_Delay.mean(), 9),
+			round(Packet_Delay.median(), 8),
+			round(Packet_Delay.standarddeviation(), 8),
+			round(1-Server_Idle_Periods.sum()/SIM_TIME, 8)))
+		print('Loss Packet Probability: %f' % router.probability())
 	
 if __name__ == '__main__': main()
