@@ -65,9 +65,9 @@ class server_queue:
 			self.num_pkt_total += 1 #increment number of packets 
 			if (self.num_pkt_total > self.queue_len):
 				self.packets_dropped += 1
-				print ('Packets dropped: %d' % self.packets_dropped)
-				print('Packet Number: %d' % self.packet_number)
-				print('Buffer size: %d' % self.queue_len)
+				#print ('Packets dropped: %d' % self.packets_dropped)
+				#print('Packet Number: %d' % self.packet_number)
+				#print('Buffer size: %d' % self.queue_len)
 			else: 
 				env.process(self.process_packet(env, new_packet))
 				print('inside else statement')
@@ -76,6 +76,7 @@ class server_queue:
 
 	def probability(self): 
 		loss_probability = (self.packets_dropped / self.num_pkt_total)
+		#print('loss probability: %d % loss_probability')
 		return loss_probability
 
 
