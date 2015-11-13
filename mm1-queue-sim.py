@@ -9,14 +9,12 @@ RANDOM_SEED = 29
 SIM_TIME = 1000000
 MU = 1
 
-
-
 """ Queue system  """		
 class server_queue:
-	def __init__(self, env, arrival_rate, Packet_Delay, Server_Idle_Periods, Buffer):
+	def __init__(self, env, arrival_rate, Packet_Delay, Server_Idle_Periods, buffer):
 		self.server = simpy.Resource(env, capacity = 1)
 		self.env = env
-		self.queue_len = Buffer 
+		self.queue_len = 0
 		self.flag_processing = 0
 		self.packet_number = 0
 		self.sum_time_length = 0
@@ -24,11 +22,10 @@ class server_queue:
 		self.arrival_rate = arrival_rate
 		self.Packet_Delay = Packet_Delay
 		self.Server_Idle_Periods = Server_Idle_Periods
-		#self.Buffer = Buffer  
+		self.buffer = buffer #buffer size
 		self.packets_dropped = 0 
-		self.num_pkt_total = 0 #number of packets in total 
+		self.num_pkt_total = 0 #total number of packets 
 		self.loss_probability = 0 
-
 		
 	def process_packet(self, env, packet):
 		with self.server.request() as req:
@@ -61,19 +58,17 @@ class server_queue:
 				idle_period = env.now - self.start_idle_time
 				self.Server_Idle_Periods.addNumber(idle_period)
 				#print("Idle period of length {0} ended".format(idle_period))
-			#self.queue_len == self.Buffer
+			
 			self.num_pkt_total += 1 #increment number of packets 
-			if (self.num_pkt_total > self.queue_len):
+			if(self.queue_len >= self.buffer): 
 				self.packets_dropped += 1
 				#print ('Packets dropped: %d' % self.packets_dropped)
 				#print('Packet Number: %d' % self.packet_number)
-				#print('Buffer size: %d' % self.queue_len)
+				#print('Buffer size: %d' % self.queue_len) 
 			else: 
+				self.queue_len += 1 
 				env.process(self.process_packet(env, new_packet))
-				#print('inside else statement')
-		
-
-
+	
 	def probability(self): 
 		self.loss_probability = float(self.packets_dropped) / float(self.num_pkt_total)
 		print('\nNumber of Packets Dropped: %d' % self.packets_dropped)
