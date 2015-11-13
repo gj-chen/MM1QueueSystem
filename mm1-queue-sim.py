@@ -35,7 +35,7 @@ class server_queue:
 			latency = env.now - packet.arrival_time
 			self.Packet_Delay.addNumber(latency)
 			#print("Packet number {0} with arrival time {1} latency {2}".format(packet.identifier, packet.arrival_time, latency))
-			#self.queue_len -= 1
+			self.queue_len -= 1
 			if self.queue_len == 0:
 				self.flag_processing = 0
 				self.start_idle_time = env.now
@@ -60,7 +60,7 @@ class server_queue:
 				#print("Idle period of length {0} ended".format(idle_period))
 			
 			self.num_pkt_total += 1 #increment number of packets 
-			if(self.queue_len >= self.buffer): 
+			if(self.queue_len > self.buffer): 
 				self.packets_dropped += 1
 				#print ('Packets dropped: %d' % self.packets_dropped)
 				#print('Packet Number: %d' % self.packet_number)
